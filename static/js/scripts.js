@@ -5,6 +5,7 @@
 //   }
 // });
 
+
 document.addEventListener("DOMContentLoaded", function () {
   const checkboxes = document.querySelectorAll('input[name="selected_rows"]');
     checkboxes.forEach(checkbox => {
@@ -79,19 +80,19 @@ let deletedRows = new Set(); // Almacenar los índices eliminados
 function deleteSelectedRows() {
   const checkboxes = document.querySelectorAll('input[name="selected_rows"]:checked');
   checkboxes.forEach(checkbox => {
-    const row = checkbox.closest("tr");
-    if (row) {
-      deletedRows.add(checkbox.value); // Guardar índice eliminado
-      row.style.display = "none"; // Ocultar la fila eliminada
-    }
+    deletedRows.add(checkbox.value); // Agregar índice al conjunto de eliminados
+    checkbox.checked = false; // Desmarcar checkbox después de eliminar
   });
-
-  // Actualizar el input de selección
-  document.getElementById('selectAll').checked = false;
-
+  filterTable(); // Actualizar vista
 }
 
 function prepareDownload() {
-  document.getElementById('selectedRowsInput').value = Array.from(deletedRows).join(',');
+  // Obtener índices de filas ELIMINADAS (no seleccionadas)
+  const deletedIndices = Array.from(deletedRows).join(',');
+  document.getElementById('selectedRowsInput').value = deletedIndices;
+  
+  // Enviar formulario
   document.getElementById('downloadForm').submit();
+  document.getElementById('wrap').style.display = 'none';
+  document.getElementById('downloadForm').style.display = 'none';
 }

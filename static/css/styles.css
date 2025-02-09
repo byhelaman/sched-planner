@@ -1,3 +1,8 @@
 .selected-row {
   background-color: #ffeb99;
 }
+
+#wrap {
+  max-height: 600px;
+  overflow-y: scroll;
+}

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload and Preview</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <h1>Upload Excel File</h1>
+  <form method="POST" enctype="multipart/form-data">
+      <input type="file" name="files" accept=".xlsx" multiple required>
+      <button type="submit">Upload and Process</button>
+  </form>
+
+  {% if schedules %}
+  <h2>Filtrar Datos</h2>
+  <label for="filterInstructor">Filtrar por Instructor:</label>
+  <input type="text" id="filterInstructor" onkeyup="filterTable()" placeholder="Escriba el nombre del instructor">
+
+  <label for="filterGroup">Filtrar por Grupo:</label>
+  <input type="text" id="filterGroup" onkeyup="filterTable()" placeholder="Escriba el nombre del grupo">
+
+  <button type="button" onclick="deleteSelectedRows()">Eliminar Seleccionados</button>
+  <button type="button" onclick="clearFilters()">Limpiar Filtros</button>
+
+  <h2>Preview Data</h2>
+  <div id="table-container" style="display: block;">
+    <table border="1">
+      <thead>
+        <tr>
+          <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"> Seleccionar</th>
+          <th>Date</th>
+          <th>Shift</th>
+          <th>Area</th>
+          <th>Start Time</th>
+          <th>End Time</th>
+          <th>Code</th>
+          <th>Instructor</th>
+          <th>Group</th>
+          <th>Minutes</th>
+          <th>Units</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in schedules %}
+        <tr>
+          <td><input type="checkbox" name="selected_rows" value="{{ loop.index0 }}" onchange="toggleRowSelection(this)"></td>
+
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
+  <br>
+  <form id="downloadForm" method="POST" action="{{ url_for('download_processed') }}">
+    <input type="hidden" name="selected_rows" id="selectedRowsInput">
+    <button type="button" onclick="prepareDownload()">Download Processed File</button>
+  </form>
+  
+  {% endif %}
+  
+  <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>

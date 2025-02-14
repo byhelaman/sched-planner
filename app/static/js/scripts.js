@@ -1,18 +1,14 @@
-// document.addEventListener("DOMContentLoaded", function () {
-//   const tableContainer = document.getElementById("table-container");
-//   if (tableContainer.innerHTML.trim() !== "") {
-//     tableContainer.style.display = "block";
-//   }
-// });
+// Declarar la variable global para almacenar índices de filas eliminadas
+let deletedRows = new Set();
 
-
+// Cuando el DOM esté completamente cargado, se agregan los event listeners a los checkboxes existentes.
 document.addEventListener("DOMContentLoaded", function () {
   const checkboxes = document.querySelectorAll('input[name="selected_rows"]');
-    checkboxes.forEach(checkbox => {
-      checkbox.addEventListener("change", function () {
-        toggleRowSelection(checkbox);
-      });
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener("change", function () {
+      toggleRowSelection(checkbox);
     });
+  });
 });
 
 function filterTable() {
@@ -22,18 +18,20 @@ function filterTable() {
 
   rows.forEach(row => {
     const checkbox = row.querySelector('input[name="selected_rows"]');
-    if (!checkbox) return; // Seguridad
+    if (!checkbox) return; // Por seguridad, si no hay checkbox, se omite la fila
 
-    const instructorCell = row.cells[7]; // Columna "Instructor"
-    const groupCell = row.cells[8]; // Columna "Group"
+    const instructorCell = row.cells[7]; //Instructor
+    const groupCell = row.cells[8]; //Group
 
     if (instructorCell && groupCell) {
       const instructorName = instructorCell.textContent.toLowerCase();
       const groupName = groupCell.textContent.toLowerCase();
 
-      // Mostrar la fila solo si coincide con los filtros y NO está en la lista de eliminadas
+      // Mostrar la fila solo si:
+      // - No está marcada como eliminada
+      // - El nombre del instructor o grupo coinciden con los filtros (o el filtro está vacío)
       if (
-        !deletedRows.has(checkbox.value) && // No mostrar si está eliminada
+        !deletedRows.has(checkbox.value) &&
         (instructorName.includes(instructorInput) || instructorInput === "") &&
         (groupName.includes(groupInput) || groupInput === "")
       ) {
@@ -65,34 +63,35 @@ function toggleSelectAll() {
   const rows = document.querySelectorAll("tbody tr");
 
   rows.forEach(row => {
-    if (row.style.display !== "none") {  // Solo afecta las filas visibles
+    // Solo afecta a las filas que están visibles
+    if (row.style.display !== "none") {
       const checkbox = row.querySelector('input[name="selected_rows"]');
       if (checkbox) {
         checkbox.checked = selectAllCheckbox.checked;
-        toggleRowSelection(checkbox); // Aplicar resaltado
+        toggleRowSelection(checkbox); // Actualiza el resaltado
       }
     }
   });
 }
 
-let deletedRows = new Set(); // Almacenar los índices eliminados
-
 function deleteSelectedRows() {
   const checkboxes = document.querySelectorAll('input[name="selected_rows"]:checked');
   checkboxes.forEach(checkbox => {
-    deletedRows.add(checkbox.value); // Agregar índice al conjunto de eliminados
+    deletedRows.add(checkbox.value); // Agregar el índice al conjunto de eliminados
     checkbox.checked = false; // Desmarcar checkbox después de eliminar
   });
-  filterTable(); // Actualizar vista
+  filterTable(); // Actualiza la vista de la tabla
 }
 
 function prepareDownload() {
-  // Obtener índices de filas ELIMINADAS (no seleccionadas)
+  // Obtener los índices de las filas eliminadas y pasarlos al input oculto
   const deletedIndices = Array.from(deletedRows).join(',');
   document.getElementById('selectedRowsInput').value = deletedIndices;
   
-  // Enviar formulario
+  // Enviar el formulario de descarga
   document.getElementById('downloadForm').submit();
-  document.getElementById('wrap').style.display = 'none';
-  document.getElementById('downloadForm').style.display = 'none';
+  
+  // Opcionalmente, ocultar la vista previa y el formulario después de enviar
+  document.getElementById('wrap').remove();
+  document.getElementById('downloadForm').remove();
 }

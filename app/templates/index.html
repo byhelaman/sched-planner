@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload and Preview</title>
+  <title>Subir y Previsualizar</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-  <h1>Upload Excel File</h1>
+  <h1>Subir Archivo Excel</h1>
   <form method="POST" enctype="multipart/form-data">
-      <input type="file" name="files" accept=".xlsx" multiple required>
-      <button id="submit" type="submit">Upload and Process</button>
+    <input type="file" name="files" accept=".xlsx" multiple required>
+    <button id="submit" type="submit">Subir y Procesar</button>
   </form>
 
   <div id="wrap">
@@ -25,7 +25,7 @@
       <button type="button" onclick="deleteSelectedRows()">Eliminar Seleccionados</button>
       <button type="button" onclick="clearFilters()">Limpiar Filtros</button>
 
-      <h2>Preview Data</h2>
+      <h2>Vista Previa de Datos</h2>
       <div id="table-container" style="display: block;">
         <table border="1">
           <thead>
@@ -46,8 +46,9 @@
           <tbody>
             {% for row in schedules %}
               <tr>
-                <td><input type="checkbox" name="selected_rows" value="{{ loop.index0 }}" onchange="toggleRowSelection(this)"></td>
-
+                <td>
+                  <input type="checkbox" name="selected_rows" value="{{ loop.index0 }}" onchange="toggleRowSelection(this)">
+                </td>
                 {% for cell in row %}
                   <td>{{ cell }}</td>
                 {% endfor %}
@@ -56,15 +57,14 @@
           </tbody>
         </table>
       </div>
-    
       <br>
     {% endif %}
   </div>
   
   {% if schedules %}
-    <form id="downloadForm" method="POST" action="{{ url_for('download_processed') }}">
+    <form id="downloadForm" method="POST" action="{{ url_for('main.download_processed') }}">
       <input type="hidden" name="selected_rows" id="selectedRowsInput">
-      <button type="button" onclick="prepareDownload()">Download Processed File</button>
+      <button type="button" onclick="prepareDownload()">Descargar Archivo Procesado</button>
     </form>
   {% endif %}
   

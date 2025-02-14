@@ -18,24 +18,24 @@
       {% if schedules %}
         <h2>Filter Data</h2>
         <label for="filterInstructor">Filter by Instructor:</label>
-        <input type="text" id="filterInstructor" onkeyup="filterTable()" placeholder="Escriba el nombre del instructor">
+        <input type="text" id="filterInstructor" onkeyup="filterTable()" placeholder="Enter instructor's name">
 
         <label for="filterGroup">Filter by Group:</label>
-        <input type="text" id="filterGroup" onkeyup="filterTable()" placeholder="Escriba el nombre del grupo">
+        <input type="text" id="filterGroup" onkeyup="filterTable()" placeholder="Enter group name">
 
         <button type="button" onclick="deleteSelectedRows()">Delete Selected</button>
         <button type="button" onclick="clearFilters()">Clean Filters</button>
 
         <h2>Data Preview</h2>
         {% if schedules %}
-          <p>Items: {{ schedules|length }}</p>
+          <p>Items indexados: {{ schedules|length }}</p>
         {% endif %}
         <div class="table">
           <div id="table-container">
             <table border="1">
               <thead>
                 <tr>
-                  <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll()">Select</th>
+                  <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th>
                   <th>Date</th>
                   <th>Shift</th>
                   <th>Area</th>

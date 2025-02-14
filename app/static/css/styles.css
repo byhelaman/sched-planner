@@ -1,5 +1,7 @@
+/* Import Google Font */
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap');
 
+/* Universal Styles */
 *,
 *::before,
 *::after {
@@ -11,6 +13,19 @@ body {
   font-family: "IBM Plex Sans", serif;
 }
 
+input[type="file"],
+input[type="file"]::file-selector-button,
+input[type="text"],
+button {
+  font-size: 1rem;
+  font-family: "IBM Plex Sans", serif;
+}
+
+input[type="file"]{
+  margin-right: 1rem;
+}
+
+/* Container and Layout */
 .container {
   padding: 0 1.5rem;
   margin: 1.5rem 0;
@@ -20,21 +35,45 @@ body {
   margin: 1rem 0;
 }
 
+/* Table Styles */
+table {
+  border-collapse: collapse;
+}
+
+th {
+  font-weight: 500;
+}
+
+th, td {
+  padding: .25rem .5rem;
+  text-wrap: nowrap;
+}
+
+td {
+  max-width: fit-content;
+}
+
 tr {
   cursor: pointer;
 }
 
+/* Form Styles */
 #uploadForm {
   padding-bottom: 1rem;
   border-bottom: 1px solid #ccc;
 }
 
+#downloadForm {
+  padding-bottom: 2rem;
+}
+
+/* Scrollable Table */
 .table {
   max-height: 600px;
   overflow-y: scroll;
 }
 
-
+/* Row Highlighting */
 .selected-row {
   background-color: #ffffcc;
 }

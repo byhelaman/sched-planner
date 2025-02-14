@@ -9,7 +9,32 @@ document.addEventListener("DOMContentLoaded", function () {
       toggleRowSelection(checkbox);
     });
   });
+
+  const rows = document.querySelectorAll("tbody tr");
+  rows.forEach(row => {
+    row.addEventListener("mouseenter", function () {
+      row.classList.add("hover-row");
+    });
+    row.addEventListener("mouseleave", function () {
+      row.classList.remove("hover-row");
+    });
+    row.addEventListener("click", toggleRowSelectionByClick);
+  });
 });
+
+function toggleRowSelectionByClick(event) {
+  // Si el clic se hizo sobre el checkbox, se omite para evitar doble acción
+  if (event.target && event.target.matches('input[name="selected_rows"]')) {
+    return;
+  }
+  const row = event.currentTarget; // La fila sobre la que se hizo clic
+  const checkbox = row.querySelector('input[name="selected_rows"]');
+  if (checkbox) {
+    // Cambia el estado del checkbox y actualiza el resaltado
+    checkbox.checked = !checkbox.checked;
+    toggleRowSelection(checkbox);
+  }
+}
 
 function filterTable() {
   const instructorInput = document.getElementById("filterInstructor").value.toLowerCase();

@@ -113,21 +113,9 @@ def download_processed():
     # Obtiene la lista de horarios procesados desde la sesión
     all_schedules = session.get("all_schedules")
 
-    # (Opcional) Se obtienen los índices de las filas a eliminar enviados desde el formulario para la descarga final.
-    # Esto permite eliminar filas adicionales en el momento de la descarga, si se desea.
-    deleted_indices = request.form.get("selected_rows", "")
-    deleted_indices = (
-        list(map(int, deleted_indices.split(","))) if deleted_indices else []
-    )
-
-    # Se filtran los datos eliminando las filas cuyos índices están en la lista de eliminados
-    filtered_data = [
-        row for idx, row in enumerate(all_schedules) if idx not in deleted_indices
-    ]
-
     # Se genera un DataFrame con los datos filtrados, asignando nombres de columnas específicos
     final_df = pd.DataFrame(
-        filtered_data,
+        all_schedules,
         columns=[
             "Date",
             "Shift",

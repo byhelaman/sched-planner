@@ -1,7 +1,6 @@
 import pandas as pd
 import os
 import uuid
-import pickle
 import time
 
 from flask import (
@@ -16,7 +15,6 @@ from flask import (
     current_app,
 )
 
-from io import BytesIO
 from werkzeug.utils import secure_filename
 from .utils.functions import process_excel_file
 
@@ -54,20 +52,10 @@ def index():
                     except PermissionError:
                         time.sleep(0.5)
 
-            # Si se han extraído horarios, se guardan temporalmente utilizando pickle
+            # Si se han extraído horarios, se guardan temporalmente utilizando almacenamiento en memoria
             if all_schedules:
-                # Genera un identificador único para la sesión temporal
-                temp_id = str(uuid.uuid4())
-                temp_file = os.path.join(
-                    current_app.config["TEMP_FOLDER"], f"{temp_id}.pkl"
-                )
-
-                # Guarda la lista de horarios en un archivo pickle
-                with open(temp_file, "wb") as f:
-                    pickle.dump(all_schedules, f)
-
-                # Se guarda el identificador temporal en la sesión del usuario
-                session["temp_id"] = temp_id
+                # En lugar de guardar en un archivo pickle, se almacena la lista en la sesión
+                session["all_schedules"] = all_schedules
                 session.modified = True
 
                 # Se renderiza la plantilla pasando los horarios procesados para su visualización
@@ -80,34 +68,53 @@ def index():
                     os.remove(file_path)
             return render_template("index.html", error=str(e))
 
-    # Para solicitudes GET, simplemente renderiza la plantilla sin datos procesados.
-    return render_template("index.html")
+    # Para solicitudes GET, se obtienen los datos de la sesión (si existen) y se pasan a la plantilla
+    schedules = session.get("all_schedules")
+    return render_template("index.html", schedules=schedules)
+
+
+# Nueva ruta para eliminar filas y actualizar la sesión
+@main.route("/delete-rows", methods=["POST"])
+def delete_rows():
+    if "all_schedules" not in session:
+        # Si no hay datos en la sesión, redirige a la página principal
+        return redirect(url_for("main.index"))
+
+    # Se obtienen los índices de las filas a eliminar enviados desde el formulario
+    deleted_indices = request.form.get("selected_rows", "")
+    deleted_indices = (
+        list(map(int, deleted_indices.split(","))) if deleted_indices else []
+    )
+
+    print(deleted_indices)
+
+    all_schedules = session.get("all_schedules")
+    # Se filtran los datos eliminando las filas cuyos índices están en la lista de eliminados
+    filtered_data = [
+        row for idx, row in enumerate(all_schedules) if idx not in deleted_indices
+    ]
+
+    # Actualiza la sesión con los datos filtrados
+    session["all_schedules"] = filtered_data
+    session.modified = True
+
+    # Se renderiza la plantilla con los datos actualizados para mostrar los cambios directamente al usuario
+    return redirect(url_for("main.index"))
 
 
 # Ruta para la descarga del archivo Excel procesado.
 @main.route("/download-processed", methods=["POST"])
 def download_processed():
-    if "temp_id" not in session:
+    # Se verifica que existan datos en la sesión (en lugar de usar un archivo pickle)
+    if "all_schedules" not in session:
         session.clear()
         return redirect(url_for("main.index"))
 
-    # Verifica que exista un identificador temporal en la sesión
-    temp_id = session.get("temp_id")
-    temp_file = os.path.join(current_app.config["TEMP_FOLDER"], f"{temp_id}.pkl")
+    # Obtiene la lista de horarios procesados desde la sesión
+    all_schedules = session.get("all_schedules")
 
-    # Si el archivo temporal no existe, se redirige a la página principal y se limpia la sesión
-    if not os.path.exists(temp_file):
-        session.clear()
-        return redirect(url_for("main.index"))
-
-    try:
-        # Se carga la lista de horarios procesados desde el archivo pickle
-        with open(temp_file, "rb") as f:
-            all_schedules = pickle.load(f)
-    except Exception as e:
-        abort(500, f"Error al cargar los datos: {str(e)}")
-
-    # Se obtienen los índices de las filas que se desean eliminar, enviados desde el formulario
+    # (Opcional) Se obtienen los índices de las filas a eliminar enviados desde el formulario para la descarga final.
+    # Esto permite eliminar filas adicionales en el momento de la descarga, si se desea.
     deleted_indices = request.form.get("selected_rows", "")
     deleted_indices = (
         list(map(int, deleted_indices.split(","))) if deleted_indices else []
@@ -148,10 +155,9 @@ def download_processed():
             download_name="schedule.xlsx",
         )
 
-        # Función que se ejecutará al cerrar la respuesta para limpiar archivos temporales
+        # Función que se ejecutará al cerrar la respuesta para limpiar el archivo generado
         def remove_files():
             try:
-                os.remove(temp_file)
                 os.remove(output_path)
             except Exception as e:
                 current_app.logger.error(f"Error limpiando archivos: {str(e)}")
@@ -162,7 +168,7 @@ def download_processed():
         current_app.logger.error(f"Error al enviar archivo: {str(e)}")
         abort(500)
 
-    # Finalmente, se limpia la sesión y se marca como modificada.
+    # (Opcional) Se puede limpiar la sesión después de la descarga si ya no se requieren los datos
     session.clear()
     session.modified = True
 

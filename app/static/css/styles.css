@@ -64,6 +64,10 @@ tr {
   border-bottom: 1px solid #ccc;
 }
 
+#deleteForm {
+  display: inline-block;
+}
+
 #downloadForm {
   padding-bottom: 2rem;
 }

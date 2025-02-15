@@ -36,14 +36,26 @@
           placeholder="Enter group name"
         />
 
-        <button type="button" onclick="deleteSelectedRows()">
-          Delete Selected
-        </button>
+        <form
+          id="deleteForm"
+          method="POST"
+          action="{{ url_for('main.delete_rows') }}"
+        >
+          <input
+            type="hidden"
+            name="selected_rows"
+            id="selectedRowsDeleteInput"
+          />
+          <button type="button" onclick="deleteSelectedRows()">
+            Delete Selected
+          </button>
+        </form>
+
         <button type="button" onclick="clearFilters()">Clean Filters</button>
 
         <h2>Data Preview</h2>
         {% if schedules %}
-        <p>Items indexados: {{ schedules|length }}</p>
+        <p>Items: {{ schedules|length }}</p>
         {% endif %}
         <div class="table">
           <div id="table-container">

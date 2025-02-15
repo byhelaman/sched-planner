@@ -1,6 +1,3 @@
-// Declarar la variable global para almacenar índices de filas eliminadas
-let deletedRows = new Set();
-
 // Cuando el DOM esté completamente cargado, se agregan los event listeners a los checkboxes existentes.
 document.addEventListener("DOMContentLoaded", function () {
   const checkboxes = document.querySelectorAll('input[name="selected_rows"]');
@@ -47,18 +44,16 @@ function filterTable() {
     const checkbox = row.querySelector('input[name="selected_rows"]');
     if (!checkbox) return; // Por seguridad, si no hay checkbox, se omite la fila
 
-    const instructorCell = row.cells[7]; //Instructor
-    const groupCell = row.cells[8]; //Group
+    const instructorCell = row.cells[7]; // Instructor
+    const groupCell = row.cells[8]; // Group
 
     if (instructorCell && groupCell) {
       const instructorName = instructorCell.textContent.toLowerCase();
       const groupName = groupCell.textContent.toLowerCase();
 
       // Mostrar la fila solo si:
-      // - No está marcada como eliminada
       // - El nombre del instructor o grupo coinciden con los filtros (o el filtro está vacío)
       if (
-        !deletedRows.has(checkbox.value) &&
         (instructorName.includes(instructorInput) || instructorInput === "") &&
         (groupName.includes(groupInput) || groupInput === "")
       ) {
@@ -101,26 +96,29 @@ function toggleSelectAll() {
   });
 }
 
+// Función modificada para enviar los índices de las filas seleccionadas al servidor para eliminación definitiva
 function deleteSelectedRows() {
+  // Recolecta todos los checkboxes seleccionados
   const checkboxes = document.querySelectorAll(
     'input[name="selected_rows"]:checked'
   );
+  // Array para almacenar los índices de filas a eliminar
+  let indicesToDelete = [];
+
   checkboxes.forEach((checkbox) => {
-    deletedRows.add(checkbox.value); // Agregar el índice al conjunto de eliminados
-    checkbox.checked = false; // Desmarcar checkbox después de eliminar
+    indicesToDelete.push(checkbox.value);
   });
-  filterTable(); // Actualiza la vista de la tabla
+  // Si hay filas seleccionadas, se envían al servidor para eliminación definitiva
+  if (indicesToDelete.length > 0) {
+    // Se asigna el valor al campo oculto del formulario de eliminación
+    document.getElementById("selectedRowsDeleteInput").value =
+      indicesToDelete.join(",");
+    // Se envía el formulario de eliminación
+    document.getElementById("deleteForm").submit();
+  }
 }
 
+// Función para enviar el formulario de descarga
 function prepareDownload() {
-  // Obtener los índices de las filas eliminadas y pasarlos al input oculto
-  const deletedIndices = Array.from(deletedRows).join(",");
-  document.getElementById("selectedRowsInput").value = deletedIndices;
-
-  // Enviar el formulario de descarga
   document.getElementById("downloadForm").submit();
-
-  // Opcionalmente, ocultar la vista previa y el formulario después de enviar
-  document.getElementById("wrap").remove();
-  document.getElementById("downloadForm").remove();
 }

@@ -1,41 +1,62 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AutoSched</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-  <div class="container">
-    <h1>Generate Schedule</h1>
-    <form id="uploadForm" method="POST" enctype="multipart/form-data">
-      <input type="file" name="files" accept=".xlsx" multiple required>
-      <button id="submit" type="submit">Upload & Process</button>
-    </form>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AutoSched</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Generate Schedule</h1>
+      <form id="uploadForm" method="POST" enctype="multipart/form-data">
+        <input type="file" name="files" accept=".xlsx" multiple required />
+        <button id="submit" type="submit">Upload & Process</button>
+      </form>
 
-    <div id="wrap">
-      {% if schedules %}
+      <div id="wrap">
+        {% if schedules %}
         <h2>Filter Data</h2>
         <label for="filterInstructor">Filter by Instructor:</label>
-        <input type="text" id="filterInstructor" onkeyup="filterTable()" placeholder="Enter instructor's name">
+        <input
+          type="text"
+          id="filterInstructor"
+          onkeyup="filterTable()"
+          placeholder="Enter instructor's name"
+        />
 
         <label for="filterGroup">Filter by Group:</label>
-        <input type="text" id="filterGroup" onkeyup="filterTable()" placeholder="Enter group name">
+        <input
+          type="text"
+          id="filterGroup"
+          onkeyup="filterTable()"
+          placeholder="Enter group name"
+        />
 
-        <button type="button" onclick="deleteSelectedRows()">Delete Selected</button>
+        <button type="button" onclick="deleteSelectedRows()">
+          Delete Selected
+        </button>
         <button type="button" onclick="clearFilters()">Clean Filters</button>
 
         <h2>Data Preview</h2>
         {% if schedules %}
-          <p>Items indexados: {{ schedules|length }}</p>
+        <p>Items indexados: {{ schedules|length }}</p>
         {% endif %}
         <div class="table">
           <div id="table-container">
             <table border="1">
               <thead>
                 <tr>
-                  <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th>
+                  <th>
+                    <input
+                      type="checkbox"
+                      id="selectAll"
+                      onclick="toggleSelectAll()"
+                    />
+                  </th>
                   <th>Date</th>
                   <th>Shift</th>
                   <th>Area</th>
@@ -50,31 +71,42 @@
               </thead>
               <tbody>
                 {% for row in schedules %}
-                  <tr>
-                    <td>
-                      <input type="checkbox" name="selected_rows" value="{{ loop.index0 }}" onchange="toggleRowSelection(this)">
-                    </td>
-                    {% for cell in row %}
-                      <td>{{ cell }}</td>
-                    {% endfor %}
-                  </tr>
+                <tr>
+                  <td>
+                    <input
+                      type="checkbox"
+                      name="selected_rows"
+                      value="{{ loop.index0 }}"
+                      onchange="toggleRowSelection(this)"
+                    />
+                  </td>
+                  {% for cell in row %}
+                  <td>{{ cell }}</td>
+                  {% endfor %}
+                </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
         </div>
-        <br/>
+        <br />
+        {% endif %}
+      </div>
+
+      {% if schedules %}
+      <form
+        id="downloadForm"
+        method="POST"
+        action="{{ url_for('main.download_processed') }}"
+      >
+        <input type="hidden" name="selected_rows" id="selectedRowsInput" />
+        <button type="button" onclick="prepareDownload()">
+          Download Processed File
+        </button>
+      </form>
       {% endif %}
     </div>
-    
-    {% if schedules %}
-      <form id="downloadForm" method="POST" action="{{ url_for('main.download_processed') }}">
-        <input type="hidden" name="selected_rows" id="selectedRowsInput">
-        <button type="button" onclick="prepareDownload()">Download Processed File</button>
-      </form>
-    {% endif %}
-  </div>
-  
-  <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-</body>
+
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+  </body>
 </html>

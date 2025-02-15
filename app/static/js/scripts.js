@@ -4,14 +4,14 @@ let deletedRows = new Set();
 // Cuando el DOM esté completamente cargado, se agregan los event listeners a los checkboxes existentes.
 document.addEventListener("DOMContentLoaded", function () {
   const checkboxes = document.querySelectorAll('input[name="selected_rows"]');
-  checkboxes.forEach(checkbox => {
+  checkboxes.forEach((checkbox) => {
     checkbox.addEventListener("change", function () {
       toggleRowSelection(checkbox);
     });
   });
 
   const rows = document.querySelectorAll("tbody tr");
-  rows.forEach(row => {
+  rows.forEach((row) => {
     row.addEventListener("mouseenter", function () {
       row.classList.add("hover-row");
     });
@@ -37,11 +37,13 @@ function toggleRowSelectionByClick(event) {
 }
 
 function filterTable() {
-  const instructorInput = document.getElementById("filterInstructor").value.toLowerCase();
+  const instructorInput = document
+    .getElementById("filterInstructor")
+    .value.toLowerCase();
   const groupInput = document.getElementById("filterGroup").value.toLowerCase();
   const rows = document.querySelectorAll("tbody tr");
 
-  rows.forEach(row => {
+  rows.forEach((row) => {
     const checkbox = row.querySelector('input[name="selected_rows"]');
     if (!checkbox) return; // Por seguridad, si no hay checkbox, se omite la fila
 
@@ -87,7 +89,7 @@ function toggleSelectAll() {
   const selectAllCheckbox = document.getElementById("selectAll");
   const rows = document.querySelectorAll("tbody tr");
 
-  rows.forEach(row => {
+  rows.forEach((row) => {
     // Solo afecta a las filas que están visibles
     if (row.style.display !== "none") {
       const checkbox = row.querySelector('input[name="selected_rows"]');
@@ -100,8 +102,10 @@ function toggleSelectAll() {
 }
 
 function deleteSelectedRows() {
-  const checkboxes = document.querySelectorAll('input[name="selected_rows"]:checked');
-  checkboxes.forEach(checkbox => {
+  const checkboxes = document.querySelectorAll(
+    'input[name="selected_rows"]:checked'
+  );
+  checkboxes.forEach((checkbox) => {
     deletedRows.add(checkbox.value); // Agregar el índice al conjunto de eliminados
     checkbox.checked = false; // Desmarcar checkbox después de eliminar
   });
@@ -110,13 +114,13 @@ function deleteSelectedRows() {
 
 function prepareDownload() {
   // Obtener los índices de las filas eliminadas y pasarlos al input oculto
-  const deletedIndices = Array.from(deletedRows).join(',');
-  document.getElementById('selectedRowsInput').value = deletedIndices;
-  
+  const deletedIndices = Array.from(deletedRows).join(",");
+  document.getElementById("selectedRowsInput").value = deletedIndices;
+
   // Enviar el formulario de descarga
-  document.getElementById('downloadForm').submit();
-  
+  document.getElementById("downloadForm").submit();
+
   // Opcionalmente, ocultar la vista previa y el formulario después de enviar
-  document.getElementById('wrap').remove();
-  document.getElementById('downloadForm').remove();
+  document.getElementById("wrap").remove();
+  document.getElementById("downloadForm").remove();
 }

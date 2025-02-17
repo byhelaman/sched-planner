@@ -35,29 +35,27 @@
           onkeyup="filterTable()"
           placeholder="Enter group name"
         />
-
-        <form
-          id="deleteForm"
-          method="POST"
-          action="{{ url_for('main.delete_rows') }}"
-        >
-          <input
-            type="hidden"
-            name="selected_rows"
-            id="selectedRowsDeleteInput"
-          />
-          <button type="button" onclick="deleteSelectedRows()">
-            Delete Selected
-          </button>
-        </form>
-
         <button type="button" onclick="clearFilters()">Clean Filters</button>
 
         <h2>Data Preview</h2>
         {% if schedules %}
-        <div class="info">
+        <div class="stats">
           <p>Items: {{ schedules|length }}</p>
           <p>Selected: <span id="selected-items">0</span></p>
+          <form
+            id="deleteForm"
+            method="POST"
+            action="{{ url_for('main.delete_rows') }}"
+          >
+            <input
+              type="hidden"
+              name="selected_rows"
+              id="selectedRowsDeleteInput"
+            />
+            <button type="button" onclick="deleteSelectedRows()">
+              Delete Selected
+            </button>
+          </form>
         </div>
         {% endif %}
         <div class="table">
@@ -109,16 +107,27 @@
       </div>
 
       {% if schedules %}
-      <form
-        id="downloadForm"
-        method="POST"
-        action="{{ url_for('main.download_processed') }}"
-      >
-        <input type="hidden" name="selected_rows" id="selectedRowsInput" />
-        <button type="button" onclick="prepareDownload()">
-          Download Schedule
-        </button>
-      </form>
+      <div class="actions">
+        <form
+          id="downloadForm"
+          method="POST"
+          action="{{ url_for('main.download_processed') }}"
+        >
+          <input type="hidden" name="selected_rows" id="selectedRowsInput" />
+          <button type="button" onclick="prepareDownload()">
+            Download Schedule
+          </button>
+        </form>
+        <form
+          id="cleanForm"
+          method="POST"
+          action="{{ url_for('main.destroy_session') }}"
+        >
+          <button type="button" onclick="cleanSchedule()">
+            Clean Schedule
+          </button>
+        </form>
+      </div>
       {% endif %}
     </div>
 

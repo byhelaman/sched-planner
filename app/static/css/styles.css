@@ -28,7 +28,7 @@ input[type="file"] {
 /* Container and Layout */
 .container {
   padding: 0 1.5rem;
-  margin: 1.5rem 0;
+  margin: 1.5rem 0 3rem 0;
 }
 
 #wrap {
@@ -65,11 +65,16 @@ tr {
 }
 
 #deleteForm {
-  display: inline-block;
+  display: none;
 }
 
-#downloadForm {
-  padding-bottom: 2rem;
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  text-wrap: nowrap;
+
+  padding: 1rem 0;
 }
 
 /* Scrollable Table */
@@ -78,8 +83,13 @@ tr {
   overflow-y: scroll;
 }
 
-.info {
+.stats {
   margin: 1rem 0;
+  height: 1.5rem;
+
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 
   p {
     margin: 0;

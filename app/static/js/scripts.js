@@ -20,12 +20,16 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function updateSelectedCount() {
-  const rowsCount = document.querySelectorAll(
+  const selectedRows = document.querySelectorAll(
     'input[name="selected_rows"]:checked'
-  ).length;
+  );
+  const rowsCount = selectedRows.length;
 
+  const deleteForm = document.getElementById("deleteForm");
   const box = document.getElementById("selected-items");
-  box.innerHTML = rowsCount;
+
+  deleteForm.style.display = rowsCount > 0 ? "inline-block" : "none";
+  box.textContent = rowsCount;
 }
 
 function toggleRowSelectionByClick(event) {
@@ -128,7 +132,10 @@ function deleteSelectedRows() {
   }
 }
 
-// Función para enviar el formulario de descarga
 function prepareDownload() {
   document.getElementById("downloadForm").submit();
+}
+
+function cleanSchedule() {
+  document.getElementById("cleanForm").submit();
 }

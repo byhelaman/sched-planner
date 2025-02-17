@@ -5,14 +5,12 @@ import re
 # Utiliza una expresión regular para encontrar todo lo que está entre paréntesis.
 def extract_parenthesized_schedule(text):
     matches = re.findall(r"\((.*?)\)", str(text))
-    # Retorna una cadena con el contenido extraído, o el texto original si no se encuentran paréntesis.
     return ", ".join(matches) if matches else str(text)
 
 
 def extract_keyword_from_text(text):
     predefined_keywords = ["CORPORATE", "HUB", "LA MOLINA", "BAW", "KIDS"]
     for keyword in predefined_keywords:
-        # Se busca la palabra clave, (sin distinguir mayúsculas/minúsculas)
         if re.search(rf"\b{keyword}\b", str(text), re.IGNORECASE):
             return keyword
     return None
@@ -25,7 +23,6 @@ def extract_duration_or_keyword(text):
             return "45"
         if keyword == "60" and re.search(rf"\b{keyword}\b", str(text), re.IGNORECASE):
             return "30"
-        # Si se encuentra cualquiera de las demás coincidencias (30 o 45), se retorna la palabra clave.
         if re.search(rf"\b{keyword}\b", str(text), re.IGNORECASE):
             return keyword
     return None
@@ -37,7 +34,6 @@ def format_time_periods(string):
 
 def determine_shift_by_time(start_time):
     try:
-        # Convierte la hora a un formato de 24 horas y la formatea a "HH:MM"
         start_time_24h = pd.to_datetime(start_time).strftime("%H:%M")
         return "P. ZUÑIGA" if start_time_24h < "14:00" else "H. GARCIA"
     except:
@@ -46,10 +42,8 @@ def determine_shift_by_time(start_time):
 
 # Procesa un archivo Excel y extrae información relevante de cada hoja.
 def process_excel_file(file_path):
-    # Abre el archivo Excel utilizando pandas
     with pd.ExcelFile(file_path) as xls:
         all_schedules = []
-        # Itera sobre cada hoja del archivo
         for sheet_name in xls.sheet_names:
             df = pd.read_excel(xls, sheet_name)
 
@@ -60,9 +54,7 @@ def process_excel_file(file_path):
             instructor_name = df.iat[4, 0]
             instructor_code = df.iat[3, 0]
 
-            # Procesar filas a partir de la fila 7 (índice 6) en adelante
             for _, row in df.iloc[6:].iterrows():
-                # Se extraen datos específicos de cada fila: tiempo de inicio, fin, grupo y programa
                 start_time, end_time, group_name, program_name = (
                     row.iloc[0],
                     row.iloc[3],
@@ -82,7 +74,6 @@ def process_excel_file(file_path):
                         extract_parenthesized_schedule(start_time)
                     )
 
-                    # Si el programa corresponde a "KIDS", se añade la palabra clave al área
                     if extract_keyword_from_text(program_name) == "KIDS":
                         area_name_with_kids = (
                             f"{area_name}/{extract_keyword_from_text(program_name)}"
@@ -121,8 +112,6 @@ def process_excel_file(file_path):
                             unit_count,
                         ]
 
-                    # Se agrega la fila procesada a la lista global
                     all_schedules.append(processed_row)
 
-        # Retorna la lista completa de horarios procesados
         return all_schedules

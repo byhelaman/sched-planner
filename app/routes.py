@@ -1,6 +1,5 @@
 import pandas as pd
 import os
-import uuid
 import time
 
 from flask import (
@@ -16,7 +15,13 @@ from flask import (
 )
 
 from werkzeug.utils import secure_filename
-from .utils.functions import process_excel_file
+from .utils.process import process_excel_file
+from .utils.temporary import (
+    save_temporary_data,
+    load_temporary_data,
+    update_temporary_data,
+    delete_temporary_data,
+)
 
 main = Blueprint("main", __name__)
 
@@ -52,10 +57,10 @@ def index():
                     except PermissionError:
                         time.sleep(0.5)
 
-            # Si se han extraído horarios, se guardan temporalmente utilizando almacenamiento en memoria
+            # Se guardan los datos procesados en un archivo temporal y se almacena el ID en la sesión
             if all_schedules:
-                # En lugar de guardar en un archivo pickle, se almacena la lista en la sesión
-                session["all_schedules"] = all_schedules
+                data_id = save_temporary_data(all_schedules)
+                session["data_id"] = data_id
                 session.modified = True
 
                 # Se renderiza la plantilla pasando los horarios procesados para su visualización
@@ -68,17 +73,25 @@ def index():
                     os.remove(file_path)
             return render_template("index.html", error=str(e))
 
-    # Para solicitudes GET, se obtienen los datos de la sesión (si existen) y se pasan a la plantilla
-    schedules = session.get("all_schedules")
-    return render_template("index.html", schedules=schedules)
+    # Para solicitudes GET, se obtienen los datos desde el archivo temporal usando el ID almacenado en la sesión
+    data_id = session.get("data_id")
+    all_schedules = []
+    if data_id:
+        try:
+            all_schedules = load_temporary_data(data_id)
+        except Exception as e:
+            current_app.logger.error(f"Error al cargar datos temporales: {str(e)}")
+    return render_template("index.html", schedules=all_schedules)
 
 
 # Nueva ruta para eliminar filas y actualizar la sesión
 @main.route("/delete-rows", methods=["POST"])
 def delete_rows():
-    if "all_schedules" not in session:
-        # Si no hay datos en la sesión, redirige a la página principal
+    if "data_id" not in session:
         return redirect(url_for("main.index"))
+
+    data_id = session.get("data_id")
+    all_schedules = load_temporary_data(data_id)
 
     # Se obtienen los índices de las filas a eliminar enviados desde el formulario
     deleted_indices = request.form.get("selected_rows", "")
@@ -86,32 +99,25 @@ def delete_rows():
         list(map(int, deleted_indices.split(","))) if deleted_indices else []
     )
 
-    print(deleted_indices)
-
-    all_schedules = session.get("all_schedules")
     # Se filtran los datos eliminando las filas cuyos índices están en la lista de eliminados
     filtered_data = [
         row for idx, row in enumerate(all_schedules) if idx not in deleted_indices
     ]
 
     # Actualiza la sesión con los datos filtrados
-    session["all_schedules"] = filtered_data
-    session.modified = True
-
-    # Se renderiza la plantilla con los datos actualizados para mostrar los cambios directamente al usuario
+    update_temporary_data(data_id, filtered_data)
     return redirect(url_for("main.index"))
 
 
 # Ruta para la descarga del archivo Excel procesado.
 @main.route("/download-processed", methods=["POST"])
 def download_processed():
-    # Se verifica que existan datos en la sesión (en lugar de usar un archivo pickle)
-    if "all_schedules" not in session:
+    if "data_id" not in session:
         session.clear()
         return redirect(url_for("main.index"))
 
-    # Obtiene la lista de horarios procesados desde la sesión
-    all_schedules = session.get("all_schedules")
+    data_id = session.get("data_id")
+    all_schedules = load_temporary_data(data_id)
 
     # Se genera un DataFrame con los datos filtrados, asignando nombres de columnas específicos
     final_df = pd.DataFrame(
@@ -150,13 +156,20 @@ def download_processed():
             except Exception as e:
                 current_app.logger.error(f"Error limpiando archivos: {str(e)}")
 
+            try:
+                delete_temporary_data(data_id)
+            except Exception as e:
+                current_app.logger.error(
+                    f"Error al eliminar datos temporales: {str(e)}"
+                )
+
         response.call_on_close(remove_files)
 
     except Exception as e:
         current_app.logger.error(f"Error al enviar archivo: {str(e)}")
         abort(500)
 
-    # (Opcional) Se puede limpiar la sesión después de la descarga si ya no se requieren los datos
+    # Se puede limpia la sesión después de la descarga
     session.clear()
     session.modified = True
 

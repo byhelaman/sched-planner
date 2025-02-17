@@ -78,6 +78,14 @@ tr {
   overflow-y: scroll;
 }
 
+.info {
+  margin: 1rem 0;
+
+  p {
+    margin: 0;
+  }
+}
+
 /* Row Highlighting */
 .selected-row {
   background-color: #ffffcc;

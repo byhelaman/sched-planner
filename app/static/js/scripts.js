@@ -19,6 +19,15 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+function updateSelectedCount() {
+  const rowsCount = document.querySelectorAll(
+    'input[name="selected_rows"]:checked'
+  ).length;
+
+  const box = document.getElementById("selected-items");
+  box.innerHTML = rowsCount;
+}
+
 function toggleRowSelectionByClick(event) {
   // Si el clic se hizo sobre el checkbox, se omite para evitar doble acción
   if (event.target && event.target.matches('input[name="selected_rows"]')) {
@@ -78,6 +87,7 @@ function toggleRowSelection(checkbox) {
   } else {
     row.classList.remove("selected-row"); // Quita el resaltado si se deselecciona
   }
+  updateSelectedCount();
 }
 
 function toggleSelectAll() {

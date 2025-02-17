@@ -55,7 +55,10 @@
 
         <h2>Data Preview</h2>
         {% if schedules %}
-        <p>Items: {{ schedules|length }}</p>
+        <div class="info">
+          <p>Items: {{ schedules|length }}</p>
+          <p>Selected: <span id="selected-items">0</span></p>
+        </div>
         {% endif %}
         <div class="table">
           <div id="table-container">
@@ -113,7 +116,7 @@
       >
         <input type="hidden" name="selected_rows" id="selectedRowsInput" />
         <button type="button" onclick="prepareDownload()">
-          Download Processed File
+          Download Schedule
         </button>
       </form>
       {% endif %}

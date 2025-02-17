@@ -66,9 +66,16 @@ def index():
         except Exception as e:
             return render_template("index.html", error=str(e))
 
-    # Para solicitudes GET, se obtienen los datos desde el archivo temporal usando el ID almacenado en la sesión
+    # GET, Se obtienen los datos desde el archivo temporal usando el ID almacenado en la sesión
     data_id = session.get("data_id")
-    all_schedules = load_temporary_data(data_id) if data_id else []
+    if data_id:
+        try:
+            all_schedules = load_temporary_data(data_id)
+        except FileNotFoundError:
+            all_schedules = []
+            session.clear()
+    else:
+        all_schedules = []
     return render_template("index.html", schedules=all_schedules)
 
 

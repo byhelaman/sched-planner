@@ -3,6 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='favicon.png') }}"
+      type="image/png"
+    />
     <title>AutoSched</title>
     <link
       rel="stylesheet"
@@ -17,7 +22,7 @@
         <button id="submit" type="submit">Upload & Process</button>
       </form>
 
-      <div id="wrap">
+      <div id="preview">
         {% if schedules %}
         <h2>Filter Data</h2>
         <label for="filterInstructor">Filter by Instructor:</label>
@@ -38,7 +43,6 @@
         <button type="button" onclick="clearFilters()">Clean Filters</button>
 
         <h2>Data Preview</h2>
-        {% if schedules %}
         <div class="stats">
           <p>Items: {{ schedules|length }}</p>
           <p>Selected: <span id="selected-items">0</span></p>
@@ -57,52 +61,51 @@
             </button>
           </form>
         </div>
-        {% endif %}
         <div class="table">
-          <div id="table-container">
-            <table border="1">
-              <thead>
-                <tr>
-                  <th>
-                    <input
-                      type="checkbox"
-                      id="selectAll"
-                      onclick="toggleSelectAll()"
-                    />
-                  </th>
-                  <th>Date</th>
-                  <th>Shift</th>
-                  <th>Area</th>
-                  <th>Start Time</th>
-                  <th>End Time</th>
-                  <th>Code</th>
-                  <th>Instructor</th>
-                  <th>Group</th>
-                  <th>Minutes</th>
-                  <th>Units</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for row in schedules %}
-                <tr>
-                  <td>
-                    <input
-                      type="checkbox"
-                      name="selected_rows"
-                      value="{{ loop.index0 }}"
-                      onchange="toggleRowSelection(this)"
-                    />
-                  </td>
-                  {% for cell in row %}
-                  <td>{{ cell }}</td>
-                  {% endfor %}
-                </tr>
+          <table border="1">
+            <thead>
+              <tr>
+                <th>
+                  <input
+                    type="checkbox"
+                    id="selectAll"
+                    onclick="toggleSelectAll()"
+                  />
+                </th>
+                <th>Date</th>
+                <th>Shift</th>
+                <th>Area</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Code</th>
+                <th>Instructor</th>
+                <th id="group">Group</th>
+                <th>Minutes</th>
+                <th>Units</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in schedules %}
+              <tr>
+                <td>
+                  <input
+                    type="checkbox"
+                    name="selected_rows"
+                    value="{{ loop.index0 }}"
+                    onchange="toggleRowSelection(this)"
+                  />
+                </td>
+                {% for cell in row %}
+                <td><span>{{ cell }}</span></td>
                 {% endfor %}
-              </tbody>
-            </table>
-          </div>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
         <br />
+        {% else %}
+        <a href="https://github.com/byhelaman" target="_blanks">Github</a>
         {% endif %}
       </div>
 

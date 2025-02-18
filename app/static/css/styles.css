@@ -11,6 +11,8 @@
 body {
   margin: 0;
   font-family: "IBM Plex Sans", serif;
+
+  min-height: 100vh;
 }
 
 input[type="file"],
@@ -27,17 +29,25 @@ input[type="file"] {
 
 /* Container and Layout */
 .container {
+  max-width: 96rem;
   padding: 0 1.5rem;
-  margin: 1.5rem 0 3rem 0;
+  /* margin: 1.5rem 0 3rem 0; */
+  margin-inline: auto;
+
+  h1 {
+    margin: 0;
+    padding: 1.25rem 0;
+  }
 }
 
-#wrap {
+#preview {
   margin: 1rem 0;
 }
 
 /* Table Styles */
 table {
   border-collapse: collapse;
+  width: 100%;
 }
 
 th {
@@ -51,7 +61,19 @@ td {
 }
 
 td {
-  max-width: fit-content;
+  width: fit-content;
+
+  &:nth-child(8) {
+    max-width: 14rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &:nth-child(9) {
+    max-width: 28rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 tr {
@@ -75,6 +97,7 @@ tr {
   text-wrap: nowrap;
 
   padding: 1rem 0;
+  margin-bottom: 2rem;
 }
 
 /* Scrollable Table */

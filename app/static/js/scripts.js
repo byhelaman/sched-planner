@@ -52,10 +52,11 @@ function filterTable() {
     .value.toLowerCase();
   const groupInput = document.getElementById("filterGroup").value.toLowerCase();
   const rows = document.querySelectorAll("tbody tr");
+  let anyVisible = false; // Variable para verificar si hay filas visibles
 
   rows.forEach((row) => {
     const checkbox = row.querySelector('input[name="selected_rows"]');
-    if (!checkbox) return; // Por seguridad, si no hay checkbox, se omite la fila
+    if (!checkbox) return;
 
     const instructorCell = row.cells[7]; // Instructor
     const groupCell = row.cells[8]; // Group
@@ -64,24 +65,54 @@ function filterTable() {
       const instructorName = instructorCell.textContent.toLowerCase();
       const groupName = groupCell.textContent.toLowerCase();
 
-      // Mostrar la fila solo si:
-      // - El nombre del instructor o grupo coinciden con los filtros (o el filtro está vacío)
       if (
         (instructorName.includes(instructorInput) || instructorInput === "") &&
         (groupName.includes(groupInput) || groupInput === "")
       ) {
         row.style.display = "";
+        anyVisible = true; // Hay al menos una fila visible
       } else {
         row.style.display = "none";
       }
     }
   });
+
+  // Mostrar mensaje si no hay filas visibles
+  const table = document.querySelector("table");
+  const noDataRow = document.getElementById("noDataRow");
+
+  if (!anyVisible) {
+    if (!noDataRow) {
+      const tbody = document.querySelector("tbody");
+      const tr = document.createElement("tr");
+      tr.id = "noDataRow";
+      const td = document.createElement("td");
+      td.colSpan = 11;
+      td.textContent = "not found data";
+      td.style.textAlign = "center";
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+    }
+  } else {
+    table.style.display = "";
+    if (noDataRow) {
+      noDataRow.remove();
+    }
+  }
 }
 
 function clearFilters() {
   document.getElementById("filterInstructor").value = "";
   document.getElementById("filterGroup").value = "";
   filterTable();
+
+  // Mostrar la tabla si no hay datos
+  const table = document.querySelector("table");
+  table.style.display = "";
+  const noDataRow = document.getElementById("noDataRow");
+  if (noDataRow) {
+    noDataRow.remove();
+  }
 }
 
 function toggleRowSelection(checkbox) {

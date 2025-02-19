@@ -113,13 +113,15 @@ tr {
 }
 
 .actions {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  text-wrap: nowrap;
-
   padding: 1rem 0;
   margin-bottom: 2rem;
+
+  .group {
+    display: flex;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+    text-wrap: nowrap;
+  }
 }
 
 /* Scrollable Table */
@@ -128,8 +130,17 @@ tr {
   overflow-y: scroll;
 }
 
+.wrap {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
 .stats {
-  margin: 1rem 0;
   height: 1.5rem;
 
   display: flex;

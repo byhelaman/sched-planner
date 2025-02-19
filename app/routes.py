@@ -1,11 +1,12 @@
 import pandas as pd
 import os
-import time
+import json
 
 from flask import (
     Blueprint,
     render_template,
     request,
+    Response,
     send_file,
     session,
     redirect,
@@ -174,3 +175,36 @@ def destroy_session():
     # Se limpia la sesión
     session.clear()
     return redirect(url_for("main.index"))
+
+
+@main.route("/copy", methods=["GET"])
+def copy():
+
+    # Cargar el archivo JSON
+    data_id = session.get("data_id")
+    temp_folder = current_app.config["TEMP_FOLDER"]
+
+    file_path = os.path.join(temp_folder, f"{data_id}.json")
+    with open(file_path, "r") as f:
+        data = json.load(f)
+
+    # Crear el DataFrame
+    df = pd.DataFrame(data)
+
+    # Copiar el DataFrame
+    df_copiado = df.copy()
+
+    # Convertir el DataFrame a un formato CSV como texto
+    # Esto lo convertirá en un texto delimitado por comas (CSV)
+    csv_texto = df_copiado.to_csv(
+        header=False,
+        index=False,
+        sep="\t",
+    )
+
+    # Crear una respuesta con el contenido como texto
+    return Response(
+        csv_texto,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=schedule.csv"},
+    )

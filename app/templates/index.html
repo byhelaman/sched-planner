@@ -28,7 +28,7 @@
         <button id="submit" type="submit">Upload & Process</button>
       </form>
 
-      <div id="preview">
+      <section id="preview">
         {% if schedules %}
         <h2>Filter Data</h2>
         <label for="filterInstructor">Filter by Instructor:</label>
@@ -49,23 +49,26 @@
         <button type="button" onclick="clearFilters()">Clean Filters</button>
 
         <h2>Data Preview</h2>
-        <div class="stats">
-          <p>Items: {{ schedules|length }}</p>
-          <p>Selected: <span id="selected-items">0</span></p>
-          <form
-            id="deleteForm"
-            method="POST"
-            action="{{ url_for('main.delete_rows') }}"
-          >
-            <input
-              type="hidden"
-              name="selected_rows"
-              id="selectedRowsDeleteInput"
-            />
-            <button type="button" onclick="deleteSelectedRows()">
-              Delete Selected
-            </button>
-          </form>
+        <div class="wrap">
+          <div class="stats">
+            <p>Items: {{ schedules|length }}</p>
+            <p>Selected: <span id="selected-items">0</span></p>
+            <form
+              id="deleteForm"
+              method="POST"
+              action="{{ url_for('main.delete_rows') }}"
+            >
+              <input
+                type="hidden"
+                name="selected_rows"
+                id="selectedRowsDeleteInput"
+              />
+              <button type="button" onclick="deleteSelectedRows()">
+                Delete Selected
+              </button>
+            </form>
+          </div>
+          <button type="button" onclick="copySchedule()">Copy Schedule</button>
         </div>
         <div class="table">
           <table border="1">
@@ -113,30 +116,33 @@
         {% else %}
         <a href="https://github.com/byhelaman" target="_blanks">Github</a>
         {% endif %}
-      </div>
+      </section>
 
       {% if schedules %}
-      <div class="actions">
-        <form
-          id="downloadForm"
-          method="POST"
-          action="{{ url_for('main.download_processed') }}"
-        >
-          <input type="hidden" name="selected_rows" id="selectedRowsInput" />
-          <button type="button" onclick="prepareDownload()">
-            Download Schedule
-          </button>
-        </form>
-        <form
-          id="cleanForm"
-          method="POST"
-          action="{{ url_for('main.destroy_session') }}"
-        >
-          <button type="button" onclick="cleanSchedule()">
-            Clean Schedule
-          </button>
-        </form>
-      </div>
+      <section class="actions">
+        <h2>Actions</h2>
+        <div class="group">
+          <form
+            id="downloadForm"
+            method="POST"
+            action="{{ url_for('main.download_processed') }}"
+          >
+            <input type="hidden" name="selected_rows" id="selectedRowsInput" />
+            <button type="button" onclick="prepareDownload()">
+              Download Schedule
+            </button>
+          </form>
+          <form
+            id="cleanForm"
+            method="POST"
+            action="{{ url_for('main.destroy_session') }}"
+          >
+            <button type="button" onclick="cleanSchedule()">
+              Clean Schedule
+            </button>
+          </form>
+        </div>
+      </section>
       {% endif %}
     </div>
 

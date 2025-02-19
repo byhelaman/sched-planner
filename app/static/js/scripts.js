@@ -170,3 +170,23 @@ function prepareDownload() {
 function cleanSchedule() {
   document.getElementById("cleanForm").submit();
 }
+
+function copySchedule() {
+  fetch("/copy", {
+    method: "GET",
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.text();
+      } else {
+        throw new Error("Error copying data");
+      }
+    })
+    .then((schedules) => {
+      navigator.clipboard.writeText(schedules);
+      alert("Copied Schedule");
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}

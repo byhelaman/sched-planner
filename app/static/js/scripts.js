@@ -1,4 +1,7 @@
-// Cuando el DOM esté completamente cargado, se agregan los event listeners a los checkboxes existentes.
+// Cuando el DOM esté completamente cargado, adjunta los event listeners
+// a los checkboxes y filas existentes. Esto garantiza que los checkboxes
+// generados dinámicamente sigan siendo manejados correctamente.
+
 document.addEventListener("DOMContentLoaded", function () {
   const checkboxes = document.querySelectorAll('input[name="selected_rows"]');
   checkboxes.forEach((checkbox) => {
@@ -17,6 +20,17 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     row.addEventListener("click", toggleRowSelectionByClick);
   });
+
+  // Muestra la superposición de carga cuando el usuario envía el formulario de subida.
+  const uploadForm = document.getElementById("uploadForm");
+  if (uploadForm) {
+    uploadForm.addEventListener("submit", function () {
+      const overlay = document.getElementById("loading-overlay");
+      if (overlay) {
+        overlay.classList.remove("hidden");
+      }
+    });
+  }
 });
 
 function updateSelectedCount() {
@@ -33,14 +47,14 @@ function updateSelectedCount() {
 }
 
 function toggleRowSelectionByClick(event) {
-  // Si el clic se hizo sobre el checkbox, se omite para evitar doble acción
+  // Si el clic ocurrió sobre el propio checkbox, deja que el manejador
+  // de cambio se encargue de ello.
   if (event.target && event.target.matches('input[name="selected_rows"]')) {
     return;
   }
-  const row = event.currentTarget; // La fila sobre la que se hizo clic
+  const row = event.currentTarget;
   const checkbox = row.querySelector('input[name="selected_rows"]');
   if (checkbox) {
-    // Cambia el estado del checkbox y actualiza el resaltado
     checkbox.checked = !checkbox.checked;
     toggleRowSelection(checkbox);
   }
@@ -52,14 +66,14 @@ function filterTable() {
     .value.toLowerCase();
   const groupInput = document.getElementById("filterGroup").value.toLowerCase();
   const rows = document.querySelectorAll("tbody tr");
-  let anyVisible = false; // Variable para verificar si hay filas visibles
+  let anyVisible = false;
 
   rows.forEach((row) => {
     const checkbox = row.querySelector('input[name="selected_rows"]');
     if (!checkbox) return;
 
-    const instructorCell = row.cells[7]; // Instructor
-    const groupCell = row.cells[8]; // Group
+    const instructorCell = row.cells[7];
+    const groupCell = row.cells[8];
 
     if (instructorCell && groupCell) {
       const instructorName = instructorCell.textContent.toLowerCase();
@@ -70,14 +84,13 @@ function filterTable() {
         (groupName.includes(groupInput) || groupInput === "")
       ) {
         row.style.display = "";
-        anyVisible = true; // Hay al menos una fila visible
+        anyVisible = true;
       } else {
         row.style.display = "none";
       }
     }
   });
 
-  // Mostrar mensaje si no hay filas visibles
   const table = document.querySelector("table");
   const noDataRow = document.getElementById("noDataRow");
 
@@ -106,7 +119,6 @@ function clearFilters() {
   document.getElementById("filterGroup").value = "";
   filterTable();
 
-  // Mostrar la tabla si no hay datos
   const table = document.querySelector("table");
   table.style.display = "";
   const noDataRow = document.getElementById("noDataRow");
@@ -116,11 +128,11 @@ function clearFilters() {
 }
 
 function toggleRowSelection(checkbox) {
-  const row = checkbox.closest("tr"); // Encuentra la fila más cercana
+  const row = checkbox.closest("tr");
   if (checkbox.checked) {
-    row.classList.add("selected-row"); // Resalta la fila seleccionada
+    row.classList.add("selected-row");
   } else {
-    row.classList.remove("selected-row"); // Quita el resaltado si se deselecciona
+    row.classList.remove("selected-row");
   }
   updateSelectedCount();
 }
@@ -128,37 +140,28 @@ function toggleRowSelection(checkbox) {
 function toggleSelectAll() {
   const selectAllCheckbox = document.getElementById("selectAll");
   const rows = document.querySelectorAll("tbody tr");
-
   rows.forEach((row) => {
-    // Solo afecta a las filas que están visibles
     if (row.style.display !== "none") {
       const checkbox = row.querySelector('input[name="selected_rows"]');
       if (checkbox) {
         checkbox.checked = selectAllCheckbox.checked;
-        toggleRowSelection(checkbox); // Actualiza el resaltado
+        toggleRowSelection(checkbox);
       }
     }
   });
 }
 
-// Función modificada para enviar los índices de las filas seleccionadas al servidor para eliminación definitiva
 function deleteSelectedRows() {
-  // Recolecta todos los checkboxes seleccionados
   const checkboxes = document.querySelectorAll(
     'input[name="selected_rows"]:checked'
   );
-  // Array para almacenar los índices de filas a eliminar
   let indicesToDelete = [];
-
   checkboxes.forEach((checkbox) => {
     indicesToDelete.push(checkbox.value);
   });
-  // Si hay filas seleccionadas, se envían al servidor para eliminación definitiva
   if (indicesToDelete.length > 0) {
-    // Se asigna el valor al campo oculto del formulario de eliminación
     document.getElementById("selectedRowsDeleteInput").value =
       indicesToDelete.join(",");
-    // Se envía el formulario de eliminación
     document.getElementById("deleteForm").submit();
   }
 }

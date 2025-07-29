@@ -1,0 +1,84 @@
+<section id="preview">
+  {% if schedules %}
+  <h2>Filter Data</h2>
+  <label for="filterInstructor">Filter by Instructor:</label>
+  <input
+    type="text"
+    id="filterInstructor"
+    onkeyup="filterTable()"
+    placeholder="Enter instructor's name"
+  />
+
+  <label for="filterGroup">Filter by Group:</label>
+  <input
+    type="text"
+    id="filterGroup"
+    onkeyup="filterTable()"
+    placeholder="Enter group name"
+  />
+  <button type="button" onclick="clearFilters()">Clean Filters</button>
+
+  <h2>Data Preview</h2>
+  <div class="wrap">
+    <div class="stats">
+      <p>Items: {{ schedules|length }}</p>
+      <p>Selected: <span id="selected-items">0</span></p>
+      <form
+        id="deleteForm"
+        method="POST"
+        action="{{ url_for('main.delete_rows') }}"
+      >
+        <input
+          type="hidden"
+          name="selected_rows"
+          id="selectedRowsDeleteInput"
+        />
+        <button type="button" onclick="deleteSelectedRows()">
+          Delete Selected
+        </button>
+      </form>
+    </div>
+    <button type="button" onclick="copySchedule()">Copy Schedule</button>
+  </div>
+  <div class="table">
+    <table border="1">
+      <thead>
+        <tr>
+          <th>
+            <input type="checkbox" id="selectAll" onclick="toggleSelectAll()" />
+          </th>
+          <th>Date</th>
+          <th>Shift</th>
+          <th>Area</th>
+          <th>Start Time</th>
+          <th>End Time</th>
+          <th>Code</th>
+          <th>Instructor</th>
+          <th id="group">Group</th>
+          <th>Minutes</th>
+          <th>Units</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in schedules %}
+        <tr>
+          <td>
+            <input
+              type="checkbox"
+              name="selected_rows"
+              value="{{ loop.index0 }}"
+              onchange="toggleRowSelection(this)"
+            />
+          </td>
+          {% for cell in row %}
+          <td><span>{{ cell }}</span></td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <a href="https://github.com/byhelaman" target="_blank">Github</a>
+  {% endif %}
+</section>

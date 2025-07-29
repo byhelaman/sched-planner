@@ -1,3 +1,30 @@
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.json
-*xlsx
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Virtual environments
+env/
+venv/
+.venv/
+
+# Pytest cache
+.pytest_cache/
+
+# Environment variables
+.env
+.env.*
+
+# Storage folders for uploads & sessions
+storage/uploads/
+storage/sessions/
+
+# Generated archives
+*.zip

@@ -1,23 +1,21 @@
 {% if schedules %}
-<section class="actions">
+<section class="actions-panel">
   <h2>Actions</h2>
-  <div class="group">
+  <div class="actions-panel__group">
     <form
       id="downloadForm"
       method="POST"
       action="{{ url_for('main.download_processed') }}"
     >
       <input type="hidden" name="selected_rows" id="selectedRowsInput" />
-      <button type="button" onclick="prepareDownload()">
-        Download Schedule
-      </button>
+      <button type="button" id="downloadBtn">Download Schedule</button>
     </form>
     <form
       id="cleanForm"
       method="POST"
       action="{{ url_for('main.destroy_session') }}"
     >
-      <button type="button" onclick="cleanSchedule()">Clean Schedule</button>
+      <button type="button" id="cleanBtn">Clean Schedule</button>
     </form>
   </div>
 </section>

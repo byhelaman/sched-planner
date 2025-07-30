@@ -1,30 +1,36 @@
-<section id="preview">
+<section id="preview" class="preview">
   {% if schedules %}
   <h2>Filter Data</h2>
-  <label for="filterInstructor">Filter by Instructor:</label>
-  <input
-    type="text"
-    id="filterInstructor"
-    onkeyup="filterTable()"
-    placeholder="Enter instructor's name"
-  />
+  <div class="preview__filters">
+    <div class="preview__filter-group">
+      <label for="filterInstructor">Filter by Instructor:</label>
+      <input
+        type="text"
+        id="filterInstructor"
+        placeholder="Enter instructor's name"
+      />
 
-  <label for="filterGroup">Filter by Group:</label>
-  <input
-    type="text"
-    id="filterGroup"
-    onkeyup="filterTable()"
-    placeholder="Enter group name"
-  />
-  <button type="button" onclick="clearFilters()">Clean Filters</button>
+      <label for="filterGroup">Filter by Group:</label>
+      <input type="text" id="filterGroup" placeholder="Enter group name" />
+    </div>
+
+    <div class="preview__filter-group">
+      <input type="checkbox" id="filterOverlaps" />
+      <label for="filterOverlaps">Filter Overlaps</label>
+    </div>
+
+    <button type="button" id="clearFilters">Clear Filters</button>
+  </div>
 
   <h2>Data Preview</h2>
-  <div class="wrap">
-    <div class="stats">
+  <div class="preview__toolbar">
+    <div class="preview__stats">
       <p>Items: {{ schedules|length }}</p>
       <p>Selected: <span id="selected-items">0</span></p>
+      <p>Overlaps: <span id="overlap-items">0</span></p>
       <form
         id="deleteForm"
+        class="preview__delete-form"
         method="POST"
         action="{{ url_for('main.delete_rows') }}"
       >
@@ -33,19 +39,19 @@
           name="selected_rows"
           id="selectedRowsDeleteInput"
         />
-        <button type="button" onclick="deleteSelectedRows()">
-          Delete Selected
-        </button>
+        <button type="button" id="deleteSelected">Delete Selected</button>
       </form>
     </div>
-    <button type="button" onclick="copySchedule()">Copy Schedule</button>
+    <button type="button" id="copyBtn" class="preview__copy-button">
+      Copy Schedule
+    </button>
   </div>
-  <div class="table">
-    <table border="1">
+  <div class="preview__table-wrapper">
+    <table id="data" class="preview__table" border="1">
       <thead>
         <tr>
           <th>
-            <input type="checkbox" id="selectAll" onclick="toggleSelectAll()" />
+            <input type="checkbox" id="selectAll" />
           </th>
           <th>Date</th>
           <th>Shift</th>
@@ -54,8 +60,8 @@
           <th>End Time</th>
           <th>Code</th>
           <th>Instructor</th>
-          <th id="group">Group</th>
-          <th>Minutes</th>
+          <th>Group</th>
+          <th>Mins</th>
           <th>Units</th>
         </tr>
       </thead>
@@ -67,7 +73,6 @@
               type="checkbox"
               name="selected_rows"
               value="{{ loop.index0 }}"
-              onchange="toggleRowSelection(this)"
             />
           </td>
           {% for cell in row %}

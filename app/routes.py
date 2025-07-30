@@ -1,13 +1,3 @@
-"""
-Este módulo define un blueprint de Flask que expone un conjunto de
-endpoints para subir y procesar horarios en Excel, previsualizar y
-filtrar resultados, eliminar filas seleccionadas, exportar datos
-procesados como un archivo Excel, copiar horarios al portapapeles
-y limpiar datos de sesión. La lógica de negocio se delega a los
-servicios bajo ``app/services`` y la persistencia de datos a los
-repositorios bajo ``app/repositories``.
-"""
-
 import os
 import json
 from typing import List

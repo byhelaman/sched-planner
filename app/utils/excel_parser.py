@@ -1,11 +1,3 @@
-"""
-Este módulo contiene una única función, :func:`parse_excel_file`, que
-lee el libro de trabajo en la ruta proporcionada y extrae información de
-horarios de cada hoja según las reglas de negocio definidas en otro lugar.
-La lista resultante de objetos :class:`~app.models.schedule_model.Schedule`
-puede persistirse o mostrarse.
-"""
-
 import os
 from typing import List
 
@@ -15,6 +7,7 @@ from app.models.schedule_model import Schedule
 from .time_utils import (
     extract_parenthesized_schedule,
     extract_keyword_from_text,
+    filter_special_tags,
     extract_duration_or_keyword,
     format_time_periods,
     determine_shift_by_time,
@@ -60,13 +53,28 @@ def parse_excel_file(file_path: str) -> List[Schedule]:
                 start_time = row.iloc[0]
                 end_time = row.iloc[3]
                 group_name = row.iloc[17] if len(row) > 17 else None
+                raw_block = row.iloc[19] if len(row) > 19 else None
+
+                # Procesar bloque sólo si pasa el filtro
+                if pd.notna(raw_block):
+                    block_filtered = filter_special_tags(str(raw_block))
+                else:
+                    block_filtered = None
+
                 program_name = row.iloc[25] if len(row) > 25 else None
                 # Omite filas con datos faltantes.
                 if not all(
                     pd.notnull(value) and str(value).strip() != ""
-                    for value in (start_time, end_time, group_name, program_name)
+                    for value in (start_time, end_time)
                 ):
                     continue
+
+                if not (pd.notna(group_name) and str(group_name).strip()):
+                    if block_filtered and str(block_filtered).strip():
+                        group_name = block_filtered
+                    else:
+                        continue  # ni grupo ni bloque válidos → saltar fila
+
                 duration = extract_duration_or_keyword(str(program_name)) or ""
                 # Cuenta cuántas veces aparece este grupo en el resto de la hoja.
                 try:

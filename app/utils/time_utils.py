@@ -1,9 +1,3 @@
-"""
-Estas funciones realizan manipulaciones ligeras de cadenas,
-extracción con expresiones regulares y clasificación según
-la hora del día.
-"""
-
 import re
 import pandas as pd
 from typing import Optional
@@ -49,6 +43,28 @@ def extract_keyword_from_text(text: str) -> Optional[str]:
         if re.search(rf"\b{keyword}\b", str(text), re.IGNORECASE):
             return keyword
     return None
+
+
+def filter_special_tags(text: str) -> Optional[str]:
+    """
+    Elimina cadenas que contengan @corp o @lima2 (ignorando mayúsculas
+    y espacios). Si las contiene, devuelve None; en caso contrario, el texto original.
+    """
+    # Normalizamos el texto: todo en minúsculas y sin espacios
+    normalized = re.sub(r"\s+", "", text.lower())
+
+    # Definimos los tags especiales normalizados
+    special_tags = [
+        "@corp",
+        "@lima2",
+        "@lcbulevarartigas",  # sin espacios ni mayúsculas
+    ]
+
+    # Si cualquier tag aparece en el texto normalizado, filtramos
+    if any(tag in normalized for tag in special_tags):
+        return None
+
+    return text
 
 
 def extract_duration_or_keyword(text: str) -> Optional[str]:
@@ -116,6 +132,7 @@ def determine_shift_by_time(start_time: str) -> str:
 __all__ = [
     "extract_parenthesized_schedule",
     "extract_keyword_from_text",
+    "filter_special_tags",
     "extract_duration_or_keyword",
     "format_time_periods",
     "determine_shift_by_time",

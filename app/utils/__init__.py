@@ -1,4 +1,4 @@
-from .time_utils import (
+from .text_utils import (
     extract_parenthesized_schedule,
     extract_keyword_from_text,
     extract_duration_or_keyword,

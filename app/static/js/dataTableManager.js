@@ -15,7 +15,8 @@ const manager = (function () {
     deleteBtn,
     downloadBtn,
     cleanBtn,
-    copyBtn,
+    scheduleBtn,
+    instructorsBtn,
     selectedCountEl,
     overlapCountEl,
     deleteForm;
@@ -255,8 +256,8 @@ const manager = (function () {
     cleanBtn?.addEventListener("click", () =>
       document.getElementById("cleanForm").submit()
     );
-    copyBtn.addEventListener("click", () => {
-      fetch("/copy", { method: "GET" })
+    scheduleBtn.addEventListener("click", () => {
+      fetch("/schedule", { method: "GET" })
         .then((res) => {
           if (!res.ok) throw new Error("Error copying data");
           return res.text();
@@ -264,6 +265,23 @@ const manager = (function () {
         .then((txt) => {
           navigator.clipboard.writeText(txt);
           alert("Copied Schedule");
+        })
+        .catch((err) => console.error(err));
+    });
+    instructorsBtn.addEventListener("click", () => {
+      // Usamos un Set para obtener instructores únicos directamente de los datos
+      const instructorSet = new Set(
+        rowsData.map((item) => item.data["Instructor"]?.trim()).filter(Boolean) // Filtra nombres vacíos o nulos
+      );
+
+      const uniqueInstructors = Array.from(instructorSet);
+
+      // Unimos los nombres con un salto de línea para una fácil copia
+      const textToCopy = uniqueInstructors.join("\n");
+      navigator.clipboard
+        .writeText(textToCopy)
+        .then(() => {
+          alert("Copied Instructors");
         })
         .catch((err) => console.error(err));
     });
@@ -326,7 +344,8 @@ const manager = (function () {
     deleteBtn = document.getElementById("deleteSelected");
     downloadBtn = document.getElementById("downloadBtn");
     cleanBtn = document.getElementById("cleanBtn");
-    copyBtn = document.getElementById("copyBtn");
+    scheduleBtn = document.getElementById("scheduleBtn");
+    instructorsBtn = document.getElementById("instructorsBtn");
     selectedCountEl = document.getElementById("selected-items");
     overlapCountEl = document.getElementById("overlap-items");
     deleteForm = document.getElementById("deleteForm");

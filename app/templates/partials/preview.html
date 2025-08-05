@@ -3,21 +3,24 @@
   <h2>Filter Data</h2>
   <div class="preview__filters">
     <div class="preview__filter-group">
-      <label for="filterInstructor">Filter by Instructor:</label>
-      <input
-        type="text"
-        id="filterInstructor"
-        placeholder="Enter instructor's name"
-      />
-
-      <label for="filterGroup">Filter by Group:</label>
-      <input type="text" id="filterGroup" placeholder="Enter group name" />
+      <div class="preview__filter-group-item">
+        <label for="filterInstructor">Filter by Instructor: </label>
+        <input
+          type="text"
+          id="filterInstructor"
+          placeholder="Enter instructor's name"
+        />
+      </div>
+      <div class="preview__filter-group-item">
+        <label for="filterGroup">Filter by Group:</label>
+        <input type="text" id="filterGroup" placeholder="Enter group name" />
+      </div>
     </div>
 
-    <div class="preview__filter-group">
+    <label for="filterOverlaps">
       <input type="checkbox" id="filterOverlaps" />
-      <label for="filterOverlaps">Filter Overlaps</label>
-    </div>
+      Filter Overlaps
+    </label>
 
     <button type="button" id="clearFilters">Clear Filters</button>
   </div>
@@ -42,9 +45,15 @@
         <button type="button" id="deleteSelected">Delete Selected</button>
       </form>
     </div>
-    <button type="button" id="copyBtn" class="preview__copy-button">
-      Copy Schedule
-    </button>
+    <div class="preview__action-group">
+      <span>Copy:</span>
+      <button type="button" id="instructorsBtn" class="preview__button">
+        Instructors
+      </button>
+      <button type="button" id="scheduleBtn" class="preview__button">
+        Schedule
+      </button>
+    </div>
   </div>
   <div class="preview__table-wrapper">
     <table id="data" class="preview__table" border="1">

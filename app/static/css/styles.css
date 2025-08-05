@@ -58,13 +58,46 @@ input[type="file"] {
 .preview__filters {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  width: fit-content;
+  gap: 1rem;
   margin-bottom: 2rem;
+}
+
+h2 {
+  padding-top: 1rem;
 }
 
 .preview__filters button {
   margin-top: 0.5rem;
+  width: fit-content;
+}
+
+.preview__filter-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+
+  max-width: 45rem;
+}
+
+.preview__filter-group-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+
+  width: 100%;
+}
+
+.preview__filter-group-item input {
+  width: 100%;
+  max-width: 22rem;
+
+  height: 30px;
+  padding: 0.5rem;
+}
+
+.preview__filter-group + label {
   width: fit-content;
 }
 
@@ -74,19 +107,32 @@ input[type="file"] {
 
 /* Toolbar and Stats */
 .preview__toolbar {
-  width: 100%;
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 2rem;
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 
+@media (min-width: 768px) {
+  .preview__filter-group {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .preview__toolbar {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
 .preview__stats {
-  height: 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
+
+  margin-right: 3rem;
 }
 
 .preview__stats p {
@@ -95,7 +141,7 @@ input[type="file"] {
 
 .preview__stats p:first-child {
   border: 1px solid #808080;
-  padding: 0.25rem 0.75rem;
+  padding: 0.25rem 0.625rem;
 }
 
 /* Table Styles */
@@ -176,8 +222,8 @@ input[type="file"] {
 
 /* Actions Panel */
 .actions-panel {
-  padding: 1rem 0;
-  margin-bottom: 2rem;
+  /* padding: 1rem 0; */
+  margin-bottom: 4rem;
 }
 
 .actions-panel__group {

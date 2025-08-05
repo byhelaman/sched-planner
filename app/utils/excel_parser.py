@@ -4,7 +4,7 @@ from typing import List
 import pandas as pd
 
 from app.models.schedule_model import Schedule
-from .time_utils import (
+from .text_utils import (
     extract_parenthesized_schedule,
     extract_keyword_from_text,
     filter_special_tags,

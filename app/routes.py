@@ -227,8 +227,8 @@ def destroy_session():
     return redirect(url_for("main.index"))
 
 
-@main.route("/copy", methods=["GET"])
-def copy():
+@main.route("/schedule", methods=["GET"])
+def schedule():
     """
     Devuelve una representación TSV de los horarios actuales para copiar.
 

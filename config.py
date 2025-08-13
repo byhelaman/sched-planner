@@ -12,3 +12,4 @@ class Config:
 
     for _folder in (UPLOAD_FOLDER, SESSION_FOLDER):
         os.makedirs(_folder, exist_ok=True)
+

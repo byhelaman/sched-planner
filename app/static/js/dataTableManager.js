@@ -18,6 +18,7 @@ const manager = (function () {
     scheduleBtn,
     instructorsBtn,
     selectedCountEl,
+    itemsCountEl,
     overlapCountEl,
     deleteForm;
 
@@ -55,6 +56,10 @@ const manager = (function () {
 
     tbody.innerHTML = "";
     tbody.appendChild(frag);
+
+    if (itemsCountEl) {
+      itemsCountEl.textContent = visibleCount;
+    }
 
     const selCount = rowsData.filter((it) => it.selected).length;
     selectedCountEl.textContent = selCount;
@@ -122,8 +127,19 @@ const manager = (function () {
   }
 
   function onFilterChange() {
-    const instFilter = filterInstructor.value.trim().toLowerCase();
-    const grpFilter = filterGroup.value.trim().toLowerCase();
+    // Obtiene los strings de los filtros y los procesa.
+    const instructorFilters = filterInstructor.value
+      .toLowerCase()
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean); // Filtra strings vacíos
+
+    const groupFilters = filterGroup.value
+      .toLowerCase()
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
     const onlyOverlap = filterOverlaps.checked;
 
     rowsData.forEach((item) => (item.overlapped = false));
@@ -150,11 +166,17 @@ const manager = (function () {
     });
 
     rowsData.forEach((item) => {
+      const instructorData = item.data["Instructor"]?.toLowerCase() || "";
+      const groupData = item.data["Group"]?.toLowerCase() || "";
+
       const passInst =
-        !instFilter ||
-        item.data["Instructor"]?.toLowerCase().includes(instFilter);
+        instructorFilters.length === 0 ||
+        instructorFilters.some((filter) => instructorData.includes(filter));
+
       const passGrp =
-        !grpFilter || item.data["Group"]?.toLowerCase().includes(grpFilter);
+        groupFilters.length === 0 ||
+        groupFilters.some((filter) => groupData.includes(filter));
+
       const passOverlap = !onlyOverlap || item.overlapped;
       item.visible = passInst && passGrp && passOverlap;
     });
@@ -347,6 +369,7 @@ const manager = (function () {
     scheduleBtn = document.getElementById("scheduleBtn");
     instructorsBtn = document.getElementById("instructorsBtn");
     selectedCountEl = document.getElementById("selected-items");
+    itemsCountEl = document.getElementById("items-count");
     overlapCountEl = document.getElementById("overlap-items");
     deleteForm = document.getElementById("deleteForm");
 

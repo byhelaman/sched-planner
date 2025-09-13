@@ -142,7 +142,10 @@ const manager = (function () {
 
     const onlyOverlap = filterOverlaps.checked;
 
+    // Resetea el estado de solapamiento en cada cambio
     rowsData.forEach((item) => (item.overlapped = false));
+
+    // Detectar solapamientos para el MISMO instructor
     const byInstructor = {};
     rowsData.forEach((it) => {
       const key = it.data["Instructor"] || "__NO_INSTRUCTOR__";
@@ -165,6 +168,30 @@ const manager = (function () {
       }
     });
 
+    // Detectar solapamientos por grupo y horario entre DIFERENTES instructores
+    const byGroupAndTime = {};
+    rowsData.forEach((it) => {
+      // Se crea una clave única combinando el grupo y el horario.
+      const key = `${it.data["Group"]}_${it.data["Start Time"]}_${it.data["End Time"]}`;
+      (byGroupAndTime[key] = byGroupAndTime[key] || []).push(it);
+    });
+
+    Object.values(byGroupAndTime).forEach((list) => {
+      // Si hay más de una entrada para la misma clase y horario...
+      if (list.length > 1) {
+        // Usamos un Set para encontrar instructores únicos de forma eficiente.
+        const instructorsInSlot = new Set(
+          list.map((item) => item.data["Instructor"])
+        );
+        // Si hay más de un instructor único, es un conflicto.
+        if (instructorsInSlot.size > 1) {
+          // Marcamos todas las entradas en conflicto como solapadas.
+          list.forEach((item) => (item.overlapped = true));
+        }
+      }
+    });
+
+    // Aplica los filtros
     rowsData.forEach((item) => {
       const instructorData = item.data["Instructor"]?.toLowerCase() || "";
       const groupData = item.data["Group"]?.toLowerCase() || "";
@@ -181,6 +208,7 @@ const manager = (function () {
       item.visible = passInst && passGrp && passOverlap;
     });
 
+    // Renderiza la tabla actualizada
     render();
     updateSelectedCount();
   }
